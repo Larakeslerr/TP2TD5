@@ -69,7 +69,7 @@ vector<vector<int>> clarkewright(const vector<Cliente>& clientes, int capacidad)
     return vector<vector<int>>(unicas.begin(), unicas.end());
 }
 
-Solution solve(const VRPLIBReader& instance) {
+Solution solveClarkeWright(const VRPLIBReader& instance) {
     // Paso 1: convertir a vector<Cliente>
     vector<Node> nodos = instance.getNodes();
     vector<int> demandas = instance.getDemands();

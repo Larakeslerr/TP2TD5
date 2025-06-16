@@ -6,6 +6,8 @@
 #include "armarRutasCortas.h"
 #include "busqueda_local.h"
 #include "clarkewright.h"
+#include "CVRP_Solution.h"
+
 
 // Función para calcular costo total dado conjunto de rutas y matriz de distancias
 double calcularCostoTotal(const std::vector<std::vector<int>>& rutas,
@@ -43,6 +45,8 @@ int main(int argc, char* argv[]) {
     }
 
     VRPLIBReader reader(argv[1]);
+    std::cout << "Nombre instancia: " << reader.getName() << std::endl;
+
 
     std::cout << "Instance Name: " << reader.getName() << std::endl;
     std::cout << "Dimension: " << reader.getDimension() << std::endl;
@@ -61,7 +65,10 @@ int main(int argc, char* argv[]) {
     for (const Node& n : clients) {
         clientes.push_back({n.id, n.x, n.y, n.demanda});
     }
-
+    // 🔍 DEBUG: verificación de demandas
+    for (const Cliente& c : clientes) {
+     std::cout << "Cliente " << c.id << " demanda: " << c.demanda << std::endl;
+    }
     // Mover depósito al índice 0
     int depot_id = reader.getDepotId();
     auto it = std::find_if(clientes.begin(), clientes.end(), [&](const Cliente& c) {
@@ -72,23 +79,66 @@ int main(int argc, char* argv[]) {
     }
 
     // Ejecutar Clarke-Wright
-    std::vector<std::vector<int>> rutas = clarkewright(clientes, reader.getCapacity());
-    
+    // Ejecutar heurística constructiva (Clarke & Wright)
+    auto rutas_cw = clarkewright(clientes, reader.getCapacity());
+    double costo_cw = calcularCostoTotal(rutas_cw, dist_matrix, clientes);
+
+    // Aplicar búsqueda local (2-opt o swap)
+    std::cout << "Aplicando búsqueda local 2-opt..." << std::endl;
+    auto rutas_opt = busquedaLocalSwap(rutas_cw, dist_matrix);
+    double costo_opt = calcularCostoTotal(rutas_opt, dist_matrix, clientes);
+
+    // Mostrar comparación
+    std::cout << "Costo original (CW): " << costo_cw << std::endl;
+    std::cout << "Costo mejorado (2-opt): " << costo_opt << std::endl;
+
+    // Usar las rutas mejoradas para el resto del programa
+    std::vector<std::vector<int>> rutas;
+    if (costo_opt < costo_cw) {
+    std::cout << "✅ Se mejoró el costo con 2-opt." << std::endl;
+    rutas = rutas_opt;
+    } else {
+    std::cout << "⚠️  2-opt no mejoró el costo. Se mantiene solución original." << std::endl;
+    rutas = rutas_cw;
+    }
+
+
+    std::cout << "DEBUG: Se generaron " << rutas.size() << " rutas." << std::endl;
+
+    // Ejecutar heurística Greedy
+    // ---------------------------
+    Solution sol_greedy = solveGreedy(reader);
+    auto rutas_greedy = sol_greedy.getRutas();
+    double costo_greedy = calcularCostoTotal(rutas_greedy, dist_matrix, clientes);
+
+    // Aplicar 2-opt a greedy
+    std::cout << "\nAplicando 2-opt a solución Greedy..." << std::endl;
+    auto rutas_greedy_opt = busquedaLocalSwap(rutas_greedy, dist_matrix);
+    double costo_greedy_opt = calcularCostoTotal(rutas_greedy_opt, dist_matrix, clientes);
+
+    // Comparación
+    std::cout << "\nResumen de heurísticas:\n";
+    std::cout << "Costo CW              : " << costo_cw << std::endl;
+    std::cout << "Costo CW + 2-opt      : " << costo_opt << std::endl;
+    std::cout << "Costo Greedy          : " << costo_greedy << std::endl;
+    std::cout << "Costo Greedy + 2-opt  : " << costo_greedy_opt << std::endl;
+
 
     // Preparar vectores para demandas y costos por ruta
     std::vector<int> demandasPorRuta;
     std::vector<double> costosPorRuta;
 
     for (const auto& ruta : rutas) {
+        int demandaRuta = 0; 
         // Calcular demanda sólo de clientes (excluyendo depósito)
-        int demandaRuta = 0;
-        for (size_t j = 1; j + 1 < ruta.size(); ++j) {
-            int id_cliente = ruta[j];
-            auto it_c = std::find_if(clientes.begin(), clientes.end(), [&](const Cliente& c) { return c.id == id_cliente; });
-            if (it_c != clientes.end()) demandaRuta += it_c->demanda;
+        for (size_t j = 0; j < ruta.size(); ++j) {
+         int id_cliente = ruta[j];
+         if (id_cliente == depot_id) continue; // saltear depósito
+         auto it_c = std::find_if(clientes.begin(), clientes.end(), [&](const Cliente& c) { return c.id == id_cliente; });
+         if (it_c != clientes.end()) demandaRuta += it_c->demanda;
         }
-        demandasPorRuta.push_back(demandaRuta);
 
+        demandasPorRuta.push_back(demandaRuta);
         // Calcular costo ruta sumando distancias entre nodos consecutivos
         double costoRuta = 0.0;
         for (size_t j = 0; j + 1 < ruta.size(); ++j) {

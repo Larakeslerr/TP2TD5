@@ -61,7 +61,7 @@ vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes,int capacid
 
 
 
-Solution solve(const VRPLIBReader& instance) {
+Solution solveGreedy(const VRPLIBReader& instance){
     
     vector<Node> nodos = instance.getNodes();
     vector<int> demandas = instance.getDemands();

@@ -78,6 +78,15 @@ void VRPLIBReader::parse(const std::string& filePath) {
     if (numVehicles == 0) {
         numVehicles = dimension > 0 ? dimension - 1 : 0;
     }
+    // Copiar las demandas al vector de nodos
+    for (Node& n : nodes) {
+        if (n.id >= 1 && n.id < demands.size()) {
+            n.demanda = demands[n.id];
+        }
+    }
+
+    // Luego calcular la matriz de distancias
+    computeDistanceMatrix();
 
     // After parsing all data, compute the distance matrix.
     computeDistanceMatrix();

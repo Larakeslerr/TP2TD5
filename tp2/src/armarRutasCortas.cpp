@@ -8,36 +8,34 @@
 using namespace std;
 
 
-vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes, int capacidad, const vector<vector<double>>& distancias) {
+vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes,int capacidad,const vector<vector<double>>& distancias) {
     int n = clientes.size();
     vector<bool> visitado(n, false);
-    visitado[0] = true; // el depósito ya está "visitado"
+    visitado[0] = true;
 
     vector<vector<int>> rutas;
 
     while (true) {
         int carga = 0;
-        int actual = 0; // arranco desde el depósito
+        int actual = 0;
         vector<int> ruta;
-        ruta.push_back(clientes[0].id); // siempre se empieza desde el depósito
+        ruta.push_back(clientes[0].id);
 
         while (true) {
             int mejor = -1;
             double distMin = numeric_limits<double>::max();
 
-
             for (int i = 1; i < n; i++) {
                 if (!visitado[i] && clientes[i].demanda + carga <= capacidad) {
-                  double d = distancias[actual][i];
-                  if (d < distMin) {
-                    distMin = d;
-                    mejor = i;
+                    double d = distancias[clientes[actual].id][clientes[i].id];
+                    if (d < distMin) {
+                        distMin = d;
+                        mejor = i;
+                    }
                 }
-             }
-        }
+            }
 
-
-            if (mejor == -1) break; // no hay más clientes que pueda agregar
+            if (mejor == -1) break;
 
             ruta.push_back(clientes[mejor].id);
             carga += clientes[mejor].demanda;
@@ -45,10 +43,9 @@ vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes, int capaci
             actual = mejor;
         }
 
-        ruta.push_back(clientes[0].id); // volver al depósito
+        ruta.push_back(clientes[0].id);
         rutas.push_back(ruta);
 
-        // si ya están todos visitados, salimos
         bool todosVisitados = true;
         for (int i = 1; i < n; i++) {
             if (!visitado[i]) {
@@ -62,7 +59,8 @@ vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes, int capaci
     return rutas;
 }
 
-/*
+
+
 Solution solve(const VRPLIBReader& instance) {
     
     vector<Node> nodos = instance.getNodes();
@@ -86,12 +84,20 @@ Solution solve(const VRPLIBReader& instance) {
 
     Solution sol;
     for (const auto& ruta : rutas) {
-        sol.agregarRuta(ruta, distancias);
+    int suma_demanda = 0;
+    for (int i = 1; i < ruta.size() - 1; ++i) { // excluye el depósito al inicio y fin
+        int cliente_id = ruta[i];
+        suma_demanda += clientes[cliente_id].demanda;
     }
+    sol.agregarRuta(ruta, distancias, suma_demanda);
+}
+
 
     return sol;
 }
 
-*/
+
+
+
 
 

@@ -1,13 +1,16 @@
 #include "CVRP_Solution.h"
 using namespace std;
+
 Solution::Solution() : costoTotal(0.0) {
     // Constructor: inicializa con costo cero y sin rutas
 }
 
-void Solution::agregarRuta(const std::vector<int>& ruta, const std::vector<std::vector<double>>& distancias) {
+void Solution::agregarRuta(const std::vector<int>& ruta, const std::vector<std::vector<double>>& distancias, int suma_demanda) {
     rutas.push_back(ruta);
+    demandas.push_back(suma_demanda);
     costoTotal += calcularCostoRuta(ruta, distancias);
 }
+
 
 double Solution::calcularCostoRuta(const std::vector<int>& ruta, const std::vector<std::vector<double>>& distancias) const {
     double total = 0.0;
@@ -21,12 +24,14 @@ double Solution::calcularCostoRuta(const std::vector<int>& ruta, const std::vect
 
 void Solution::imprimir() const {
     std::cout << "Rutas:" << std::endl;
-    for (const auto& ruta : rutas) {
-        for (int nodo : ruta) {
-            std::cout << nodo << " ";
-        }
-        std::cout << std::endl;
+    for (size_t i = 0; i < rutas.size(); ++i) {
+    std::cout << "Ruta " << i + 1 << ": ";
+    for (int nodo : rutas[i]) {
+        std::cout << nodo << " ";
     }
+    std::cout << "| SUMD = " << demandas[i] << std::endl;
+}
+
     std::cout << "Costo total: " << costoTotal << std::endl;
 }
 

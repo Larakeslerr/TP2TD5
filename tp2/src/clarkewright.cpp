@@ -91,8 +91,9 @@ Solution solve(const VRPLIBReader& instance) {
 
     // Paso 3: cargar la solucion final
     Solution sol;
+    int suma_demanda = 0;
     for (const auto& ruta : rutas) {
-        sol.agregarRuta(ruta, distancias);
+        sol.agregarRuta(ruta, distancias,suma_demanda);
     }
 
     return sol;

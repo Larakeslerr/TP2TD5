@@ -56,3 +56,32 @@ std::vector<std::vector<int>> armarRutasCortasAleatorizado(
 
     return rutas;
 }
+
+/*
+-----------------------------------------------------------
+Complejidad del algoritmo armarRutasCortasAleatorizado
+-----------------------------------------------------------
+
+Parámetros:
+- n: cantidad total de nodos (clientes + depósito)
+- rcl_size: tamaño de la lista RCL (aleatoriedad controlada)
+
+Análisis:
+
+- El algoritmo recorre los clientes hasta que todos fueron visitados.
+- En cada iteración externa (por cada ruta generada), se construye una ruta válida:
+    - Se evalúan hasta O(n) clientes no visitados.
+    - Se calcula la distancia y se arma un vector de candidatos: O(n)
+    - Luego se ordena ese vector (para tomar los mejores): O(n log n)
+    - Se elige un candidato aleatoriamente dentro del top `rcl_size`: O(1)
+
+En el peor caso, hay hasta O(n) rutas (una por cliente), por lo que:
+
+    → Costo total = O(n) rutas × O(n log n) cada una = **O(n² log n)**
+
+Este algoritmo es más eficiente que la versión determinista (greedy pura, O(n³)), 
+ya que evita la comparación exhaustiva y privilegia un subconjunto de buenas opciones.
+
+-----------------------------------------------------------
+*/
+

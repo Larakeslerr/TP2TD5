@@ -83,3 +83,51 @@ vector<vector<int>> busquedaLocal2opt(
     }
     return resultado;
 }
+
+/*
+-----------------------------------------------------------
+Complejidad de búsqueda local: Swap y 2-opt
+-----------------------------------------------------------
+
+Sea:
+- r = cantidad de rutas
+- m = tamaño máximo de una ruta (cantidad de nodos en la ruta, típicamente m ≪ n)
+- n = cantidad total de nodos (para referencia global)
+
+-----------------------------------------------------------
+1. busquedaLocalSwap(...)
+-----------------------------------------------------------
+
+Para cada ruta:
+- Se considera cada par de posiciones (i, j) dentro de la ruta: O(m²)
+- Para cada swap se recalcula la distancia de la ruta: O(m)
+- Se repite mientras haya mejora (puede ser varias iteraciones)
+
+Peor caso por ruta: O(k × m³), donde k es la cantidad de iteraciones hasta converger
+
+Total para todas las rutas: O(r × k × m³)
+
+En la práctica, k es pequeño y m ≪ n, así que el algoritmo es eficiente para rutas cortas.
+
+-----------------------------------------------------------
+2. aplicar2opt(...)
+-----------------------------------------------------------
+
+Para una sola ruta:
+- Se consideran pares (i, j) donde 1 ≤ i < j ≤ m-2 → O(m²)
+- Cada reversa de segmento es O(m), y se recalcula la distancia: O(m)
+- Se repite hasta no mejorar → multiplicado por k iteraciones
+
+Complejidad por ruta: O(k × m³)
+
+-----------------------------------------------------------
+3. busquedaLocal2opt(...)
+-----------------------------------------------------------
+
+Llama a aplicar2opt(...) sobre cada ruta → O(r × k × m³)
+
+-----------------------------------------------------------
+Resumen:
+- Complejidad temporal Swap:      O(r × k × m³)
+- Complejidad temporal 2-opt:     O(r × k × m³)
+*/

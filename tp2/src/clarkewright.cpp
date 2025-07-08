@@ -98,3 +98,31 @@ Solution solveClarkeWright(const VRPLIBReader& instance) {
 
     return sol;
 }
+
+/*
+-----------------------------------------------------------
+Complejidad del algoritmo Clarke & Wright
+-----------------------------------------------------------
+
+Sea n la cantidad total de clientes (excluyendo el depósito).
+
+1. Cálculo de ahorros (savings):
+   - Se computa un valor de ahorro para cada par (i, j) de clientes.
+   - Esto implica recorrer todos los pares i < j → hay O(n²) combinaciones.
+
+2. Ordenamiento del vector de ahorros:
+   - Se ordenan los O(n²) elementos → complejidad O(n² log n).
+
+3. Fusión de rutas:
+   - En el peor caso, se intenta unir rutas para cada uno de los O(n²) pares.
+   - Cada intento de fusión puede requerir copiar rutas y verificar demanda total, lo cual es O(n) en el peor caso (aunque en práctica es menor).
+
+Por lo tanto, la complejidad temporal total es:
+
+   → Cálculo de savings:        O(n²)  
+   → Ordenamiento:              O(n² log n)  
+   → Iteración para fusiones:   O(n² × n) = O(n³) en el peor caso
+
+Complejidad temporal = O(n³) en el peor caso.
+
+*/

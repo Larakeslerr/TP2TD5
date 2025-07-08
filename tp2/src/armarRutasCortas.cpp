@@ -59,7 +59,24 @@ vector<vector<int>> armarRutasCortas(const vector<Cliente>& clientes,int capacid
     return rutas;
 }
 
+/*
+-----------------------------------------------------------
+Complejidad del algoritmo armarRutasCortas
+-----------------------------------------------------------
 
+Sea n la cantidad total de nodos (incluido el depósito).
+
+- El algoritmo genera rutas de forma iterativa hasta que todos los clientes han sido visitados.
+- Por cada ruta:
+    - Se ejecuta una búsqueda del cliente no visitado más cercano compatible con la capacidad.
+    - Esta búsqueda tiene costo O(n) ya que revisa todos los nodos no visitados.
+    - Como una ruta puede tener hasta O(n) clientes en el peor caso, el bucle interno también itera O(n) veces.
+- En el peor caso (una ruta por cliente), hay O(n) rutas.
+
+Por lo tanto, la complejidad temporal total en el peor caso es:
+
+    O(n) rutas × O(n) iteraciones por ruta × O(n) comparaciones = O(n³)
+*/
 
 Solution solveGreedy(const VRPLIBReader& instance){
     

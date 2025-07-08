@@ -71,3 +71,38 @@ Solution grasp(const VRPLIBReader& reader, int n_iters, int rcl_size) {
 
     return mejorSol;
 }
+
+/*
+-----------------------------------------------------------
+Complejidad del algoritmo GRASP
+-----------------------------------------------------------
+
+Parámetros:
+- n: cantidad de nodos (clientes + depósito)
+- r: cantidad de rutas generadas por solución
+- m: tamaño promedio de cada ruta (en general, r × m ≈ n)
+- k: cantidad de iteraciones que hace 2-opt hasta estabilizar
+- n_iters: cantidad de iteraciones externas de GRASP
+
+Análisis por iteración:
+- Construcción aleatorizada (armarRutasCortasAleatorizado): O(n³)
+- Búsqueda local con 2-opt sobre r rutas: O(r × k × m³)
+- Cálculo de costo y verificación de mejora: O(n)
+
+Asumiendo r × m ≈ n, el costo por iteración es:
+    → O(n³ + k × n³) = O(k × n³)
+
+Como se realizan n_iters iteraciones del algoritmo GRASP, la complejidad total es:
+
+    → O(n_iters × k × n³)
+
+En la práctica:
+- k es acotado (pocas mejoras locales)
+- n_iters se fija manualmente (por ejemplo, 10 o 20)
+
+Entonces, para casos reales: 
+    → Complejidad efectiva ≈ O(n³)
+
+-----------------------------------------------------------
+*/
+

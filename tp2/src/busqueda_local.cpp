@@ -1,6 +1,7 @@
 #include "busqueda_local.h"
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -12,40 +13,65 @@ double calcularDistanciaRuta(const vector<int>& ruta, const vector<vector<double
     return total;
 }
 
-vector<vector<int>> busquedaLocalSwap(
+
+vector<vector<int>> BusquedaLocalSwap(
     const vector<vector<int>>& rutas,
-    const vector<vector<double>>& distancias
+    const vector<vector<double>>& distancias,
+    const vector<int>& demandas,
+    int capacidad
 ) {
     vector<vector<int>> mejor_rutas = rutas;
     bool hayMejora = true;
 
+    auto calcularCarga = [&](const vector<int>& ruta) {
+        int carga = 0;
+        for (int cliente : ruta) {
+            if (cliente != 0) carga += demandas[cliente];
+        }
+        return carga;
+    };
+
     while (hayMejora) {
         hayMejora = false;
 
-        for (auto& ruta : mejor_rutas) {
-            double mejor_dist = calcularDistanciaRuta(ruta, distancias);
-            vector<int> mejor_ruta = ruta;
+        for (size_t r1 = 0; r1 < mejor_rutas.size(); ++r1) {
+            for (size_t i = 1; i < mejor_rutas[r1].size() - 1; ++i) {
+                for (size_t r2 = 0; r2 < mejor_rutas.size(); ++r2) {
+                    if (r1 == r2) continue;  // Solo entre rutas distintas
 
-            for (size_t i = 1; i < ruta.size() - 1; ++i) {
-                for (size_t j = i + 1; j < ruta.size() - 1; ++j) {
-                    vector<int> nueva_ruta = ruta;
-                    swap(nueva_ruta[i], nueva_ruta[j]);
+                    for (size_t j = 1; j < mejor_rutas[r2].size() - 1; ++j) {
+                        // Copiar rutas para testeo
+                        vector<int> nueva_ruta1 = mejor_rutas[r1];
+                        vector<int> nueva_ruta2 = mejor_rutas[r2];
 
-                    double nueva_dist = calcularDistanciaRuta(nueva_ruta, distancias);
-                    if (nueva_dist < mejor_dist) {
-                        mejor_dist = nueva_dist;
-                        mejor_ruta = nueva_ruta;
-                        hayMejora = true;
+                        swap(nueva_ruta1[i], nueva_ruta2[j]);
+
+                        // Validar factibilidad
+                        if (calcularCarga(nueva_ruta1) <= capacidad &&
+                            calcularCarga(nueva_ruta2) <= capacidad) {
+
+                            double dist_original = calcularDistanciaRuta(mejor_rutas[r1], distancias) +
+                                                   calcularDistanciaRuta(mejor_rutas[r2], distancias);
+                            double nueva_dist = calcularDistanciaRuta(nueva_ruta1, distancias) +
+                                                calcularDistanciaRuta(nueva_ruta2, distancias);
+
+                            if (nueva_dist < dist_original) {
+                                mejor_rutas[r1] = nueva_ruta1;
+                                mejor_rutas[r2] = nueva_ruta2;
+                                hayMejora = true;
+                            }
+                        }
                     }
                 }
             }
-
-            ruta = mejor_ruta;
         }
     }
 
     return mejor_rutas;
 }
+
+
+
 
 vector<int> aplicar2opt(const vector<int>& ruta, const vector<vector<double>>& distancias) {
     vector<int> mejor_ruta = ruta;
@@ -131,3 +157,5 @@ Resumen:
 - Complejidad temporal Swap:      O(r × k × m³)
 - Complejidad temporal 2-opt:     O(r × k × m³)
 */
+
+

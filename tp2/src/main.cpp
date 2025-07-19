@@ -114,7 +114,8 @@ int main(int argc, char* argv[]) {
 
     // Rutas Cortas + Swap
     t1 = high_resolution_clock::now();
-    auto rutas_cortas_swap = busquedaLocalSwap(rutas_cortas, dist_matrix);
+    auto rutas_base_para_swap = rutas_cortas; // ← copia real
+    auto rutas_cortas_swap = BusquedaLocalSwap(rutas_base_para_swap, dist_matrix, reader.getDemands(), reader.getCapacity());
     t2 = high_resolution_clock::now();
     imprimirResumen("Rutas Cortas + Swap", rutas_cortas_swap, dist_matrix, clientes,
                     duration<double, milli>(t2 - t1).count());
@@ -125,7 +126,7 @@ int main(int argc, char* argv[]) {
     bool mejoro = true;
     while (mejoro) {
         mejoro = false;
-        auto swap = busquedaLocalSwap(rutas_vnd, dist_matrix);
+        auto swap = BusquedaLocalSwap(rutas_vnd, dist_matrix, reader.getDemands(), reader.getCapacity());
         if (calcularCostoTotal(swap, dist_matrix, clientes) < calcularCostoTotal(rutas_vnd, dist_matrix, clientes)) {
             rutas_vnd = swap;
             mejoro = true;

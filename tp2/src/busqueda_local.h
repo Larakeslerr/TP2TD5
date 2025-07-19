@@ -5,11 +5,12 @@
 
 using namespace std;
 
-vector<vector<int>> busquedaLocalSwap(
+vector<vector<int>> BusquedaLocalSwap(
     const vector<vector<int>>& rutas,
-    const vector<vector<double>>& distancias
+    const vector<vector<double>>& distancias,
+    const vector<int>& demandas,
+    int capacidad
 );
-
 vector<vector<int>> busquedaLocal2opt(
     const vector<vector<int>>& rutas,
     const vector<vector<double>>& distancias
